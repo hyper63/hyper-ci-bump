@@ -60,7 +60,7 @@ async function run ({
     ...COMMON_DEFAULTS,
     ...runtimeDefaults,
     releaseAs: bumpTo,
-    tagPrefix: `${prefix}@v`
+    tagPrefix: prefix ? `${prefix}@v` : 'v'
   })
 
   core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
