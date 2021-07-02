@@ -6,7 +6,7 @@ inputs:
     description: 'semver version to bump to'
     required: true
   package:
-    description: 'package name to use as tag prefix ie. hyper-app-opine -> hyper-app-opine@v${{bump-to}}'
+    description: 'package name to use as tag prefix ie. hyper-app-opine -> hyper-app-opine@v1.2.3'
     required: false
     default: ''
   runtime:
