@@ -53,12 +53,14 @@ async function run ({
 }) {
   const runtime = core.getInput('runtime') || 'deno'
   const bumpTo = core.getInput('bump-to')
+  const prefix = core.getInput('package')
 
   const runtimeDefaults = runtime === 'node' ? NODE_DEFAULTS : DENO_DEFAULTS
   const options = rc('version', {
     ...COMMON_DEFAULTS,
     ...runtimeDefaults,
-    releaseAs: bumpTo
+    releaseAs: bumpTo,
+    tagPrefix: `${prefix}@v`
   })
 
   core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)

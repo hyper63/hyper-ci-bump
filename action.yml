@@ -5,6 +5,10 @@ inputs:
   bump-to:
     description: 'semver version to bump to'
     required: true
+  package:
+    description: 'package name to use as tag prefix ie. hyper-app-opine -> hyper-app-opine@v${{bump-to}}'
+    required: false
+    default: ''
   runtime:
     description: 'runtime for project node or deno. default: deno'
     required: false
