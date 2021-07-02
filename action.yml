@@ -1,0 +1,17 @@
+
+name: 'Bump'
+description: 'Bump the manifest and generate changelogs'
+inputs:
+  bump-to:
+    description: 'semver version to bump to'
+    required: true
+  runtime:
+    description: 'runtime for project node or deno. default: deno'
+    required: false
+    default: deno
+outputs:
+  version:
+    description: 'The semver version bumped to'
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
