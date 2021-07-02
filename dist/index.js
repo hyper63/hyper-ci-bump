@@ -5,7 +5,6 @@
 /***/ ((module) => {
 
 
-
 /** @type {const('standard-version').Options} */
 const COMMON_DEFAULTS = {
   noVerify: true,
@@ -65,7 +64,7 @@ async function run ({
 
   core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
   await standardVersion(options)
-  
+
   runtimeDefaults.bumpFiles.forEach(({ filename }) => {
     const bumpedFileContents = readFileSync(filename, { encoding: 'utf-8' })
     core.info(
@@ -79,6 +78,7 @@ async function run ({
 module.exports = {
   run
 }
+
 
 /***/ }),
 
