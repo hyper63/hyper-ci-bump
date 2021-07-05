@@ -89,3 +89,7 @@ Now a changelog will be generated and/or appended to for the repo. Any of the fo
 ## License
 
 Apache-2.0
+
+## Contributing
+
+Logic can be found in `main.js` and dependencies are provided via `index.js`. There is a `pre-commit` git hook that will rebuild any `*.js` changes into `dist`, so ensure git hooks are installed by running `npm i` or `npm prepare`. 
