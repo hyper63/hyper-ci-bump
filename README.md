@@ -62,13 +62,13 @@ jobs:
 
 ### Inputs
 
-*string* `bump-to` **Required**: the semver comptaible version to bump to
-*string* `package` **Optional**: the package name to use as a tag prefix. Great for repos with multiple independently versioned packages ie. in a monorepo
-*string* `runtime` **Optional**: the runtime for the package. `node` or `deno` default: `deno`. This dictates which manifest files are bumped. `egg.json` for `deno`, and `package.json` and `package-lock.json` for `node`
+- *string* `bump-to` **Required**: the semver comptaible version to bump to
+- *string* `package` **Optional**: the package name to use as a tag prefix. Great for repos with multiple independently versioned packages ie. in a monorepo
+- *string* `runtime` **Optional**: the runtime for the package. `node` or `deno` **default**: `deno`. This dictates which manifest files are bumped. `egg.json` for `deno`, and `package.json` and `package-lock.json` for `node`
 
 ### Outputs
 
-*string* `version`: The semver version bumped to
+- *string* `version`: The semver version bumped to
 
 ### Configuration
 
@@ -82,7 +82,7 @@ a `.versionrc` can be used to override behavior. For example, to enable generati
 }
 ```
 
-Now a changelog will be generated and/or appended to for the repo. Any lifecycle can be enabled/disabled:
+Now a changelog will be generated and/or appended to for the repo. Any of the following lifecycle can be enabled/disabled using this method:
 
 `bump`, `changelog`, `commit`, `tag`
 
