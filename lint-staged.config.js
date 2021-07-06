@@ -1,3 +1,3 @@
 module.exports = {
-  '*.js': ['standard --fix', 'npm run build']
+  '*.js': ['standard --fix']
 }

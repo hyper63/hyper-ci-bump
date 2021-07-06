@@ -54,25 +54,33 @@ async function run ({
   const bumpTo = core.getInput('bump-to')
   const prefix = core.getInput('package')
 
+  const tagPrefix = prefix ? `${prefix}@v` : 'v'
   const runtimeDefaults = runtime === 'node' ? NODE_DEFAULTS : DENO_DEFAULTS
   const options = rc('version', {
     ...COMMON_DEFAULTS,
     ...runtimeDefaults,
     releaseAs: bumpTo,
-    tagPrefix: prefix ? `${prefix}@v` : 'v'
+    tagPrefix
   })
 
   core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
   await standardVersion(options)
 
+  let version
   runtimeDefaults.bumpFiles.forEach(({ filename }) => {
     const bumpedFileContents = readFileSync(filename, { encoding: 'utf-8' })
+    const v = JSON.parse(bumpedFileContents).version
+    version = v
     core.info(
-      `⚡️ version in ${filename} bumped to ${JSON.parse(bumpedFileContents).version}`
+      `⚡️ version in ${filename} bumped to ${v}`
     )
   })
 
-  core.setOutput('version', bumpTo)
+  core.setOutput('version', version)
+  // git tagging can be skipped, so only set this output, if tagging was actually performed
+  if (!options.skip.tag) {
+    core.setOutput('tag', `${tagPrefix}${version}`)
+  }
 }
 
 module.exports = {

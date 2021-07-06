@@ -69,6 +69,7 @@ jobs:
 ### Outputs
 
 - *string* `version`: The semver version bumped to
+- *string* `tag`: The git tag created, if tagging was performed. Otherwise `undefined`
 
 ### Configuration
 

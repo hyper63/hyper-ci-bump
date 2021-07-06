@@ -16,6 +16,8 @@ inputs:
 outputs:
   version:
     description: 'The semver version bumped to'
+  tag:
+    description: 'The git tag created'
 runs:
   using: 'node12'
   main: 'dist/index.js'
