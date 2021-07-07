@@ -7,7 +7,7 @@
 ## Table of Contents
 
 - [Getting Started](#getting-started)
-- [API](#API)
+- [API](#api)
 - [License](#license)
 
 ## Getting Started
@@ -51,6 +51,7 @@ jobs:
         with:
           bump-to: ${{github.event.inputs.version}}
           package: ${{github.event.inputs.package}}
+          prefix: ${{github.event.inputs.prefix}}
           runtime: ${{github.event.inputs.runtime}}
       # Push the new commits and tags back to the repo
       - name: push
@@ -63,8 +64,9 @@ jobs:
 ### Inputs
 
 - *string* `bump-to` **Required**: the semver comptaible version to bump to
-- *string* `package` **Optional**: the package name to use as a tag prefix. Great for repos with multiple independently versioned packages ie. in a monorepo
-- *string* `runtime` **Optional**: the runtime for the package. `node` or `deno` **default**: `deno`. This dictates which manifest files are bumped. `egg.json` for `deno`, and `package.json` and `package-lock.json` for `node`
+- *string* `package` **Optional**: the package name that contains the files to bump. Great for repos with multiple independently versioned packages ie. in a monorepo. Example: `app-opine` will find a package in `*/**/app-opine`
+- *string* `prefix` **Optional**: prefix to use for the git tag. Example: `app-opine` prefix and `v1.3.2` version will result in a tag of `app-opine@v1.3.2`. **default**: the `package` input.
+- *string* `runtime` **Optional**: the runtime for the package. `node` or `deno`: This dictates which manifest files are bumped. `egg.json` for `deno`, and `package.json` and `package-lock.json` for `node`. **default**: `deno`
 
 ### Outputs
 
