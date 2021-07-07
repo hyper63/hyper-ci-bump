@@ -63,14 +63,14 @@ async function run (
 ) {
   const runtime = _core.getInput('runtime') || 'deno'
   const bumpTo = _core.getInput('bump-to')
-  const _package = _core.getInput('package')
-  const prefix = _core.getInput('prefix') || _package
+  const pkg = _core.getInput('package')
+  const prefix = _core.getInput('prefix') || pkg
 
   /**
    * Need to find the package to bump
    */
-  if (_package) {
-    const path = await getPackage(_package, runtime)
+  if (pkg) {
+    const path = await getPackage(pkg, runtime)
     _core.info(`⚡️ cd into directory ${path}...`)
     process.chdir(path)
   }
@@ -81,7 +81,8 @@ async function run (
     ...COMMON_DEFAULTS,
     ...runtimeDefaults,
     releaseAs: bumpTo,
-    tagPrefix
+    tagPrefix,
+    releaseCommitMessageFormat: pkg ? `chore(${pkg}): release {{currentTag}}` : 'chore(release): {{currentTag}}'
   })
 
   _core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
