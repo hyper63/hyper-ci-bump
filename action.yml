@@ -6,7 +6,11 @@ inputs:
     description: 'semver version to bump to'
     required: true
   package:
-    description: 'package name to use as tag prefix ie. hyper-app-opine -> hyper-app-opine@v1.2.3'
+    description: 'in a monorepo, package that contains the files to be bumped ie. app-opine -> packages/app-opine'
+    required: false
+    default: ''
+  prefix:
+    description: 'string to use as the tag prefix ie. hyper-app-opine -> hyper-app-opine@v1.2.3. Defaults to the input for package'
     required: false
     default: ''
   runtime:

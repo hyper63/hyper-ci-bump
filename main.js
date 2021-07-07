@@ -1,4 +1,16 @@
 
+const { readFileSync, existsSync } = require('fs')
+const { join } = require('path')
+
+const core = require('@actions/core')
+
+const globby = require('globby')
+const rc = require('rc')
+const standardVersion = require('standard-version')
+
+const DENO_MANIFEST = 'egg.json'
+const NODE_MANIFEST = 'package.json'
+
 /** @type {const('standard-version').Options} */
 const COMMON_DEFAULTS = {
   noVerify: true,
@@ -18,7 +30,7 @@ const COMMON_DEFAULTS = {
 const DENO_DEFAULTS = {
   bumpFiles: [
     {
-      filename: 'egg.json',
+      filename: DENO_MANIFEST,
       type: 'json'
     }
   ]
@@ -28,7 +40,7 @@ const DENO_DEFAULTS = {
 const NODE_DEFAULTS = {
   bumpFiles: [
     {
-      filename: 'package.json',
+      filename: NODE_MANIFEST,
       type: 'json'
     },
     {
@@ -38,45 +50,106 @@ const NODE_DEFAULTS = {
   ]
 }
 
-async function run ({
-  standardVersion,
-  core,
-  rc,
-  readFileSync
-}) {
-  const runtime = core.getInput('runtime') || 'deno'
-  const bumpTo = core.getInput('bump-to')
-  const prefix = core.getInput('package')
+async function run (
+  _sv = standardVersion,
+  _rc = rc,
+  _core = core
+) {
+  const runtime = _core.getInput('runtime') || 'deno'
+  const bumpTo = _core.getInput('bump-to')
+  const _package = _core.getInput('package')
+  const prefix = _core.getInput('prefix') || _package
 
-  const tagPrefix = prefix ? `${prefix}@v` : 'v'
-  const runtimeDefaults = runtime === 'node' ? NODE_DEFAULTS : DENO_DEFAULTS
-  const options = rc('version', {
+  /**
+   * Need to find the package to bump
+   */
+  if (_package) {
+    const path = await getPackage(_package, runtime)
+    _core.info(`⚡️ cd into directory ${path}...`)
+    process.chdir(path)
+  }
+
+  const tagPrefix = getPrefix(prefix)
+  const runtimeDefaults = getRuntimeDefaults(runtime)
+  const options = _rc('version', {
     ...COMMON_DEFAULTS,
     ...runtimeDefaults,
     releaseAs: bumpTo,
     tagPrefix
   })
 
-  core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
-  await standardVersion(options)
+  _core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
+  await _sv({
+    ...options
+  })
 
   let version
   runtimeDefaults.bumpFiles.forEach(({ filename }) => {
     const bumpedFileContents = readFileSync(filename, { encoding: 'utf-8' })
     const v = JSON.parse(bumpedFileContents).version
     version = v
-    core.info(
+    _core.info(
       `⚡️ version in ${filename} bumped to ${v}`
     )
   })
 
-  core.setOutput('version', version)
-  // git tagging can be skipped, so only set this output, if tagging was actually performed
+  _core.setOutput('version', version)
+  // The tagging can be skipped, so only want to set this output, if tagging was actually performed
   if (!options.skip.tag) {
-    core.setOutput('tag', `${tagPrefix}${version}`)
+    _core.setOutput('tag', `${tagPrefix}${version}`)
   }
 }
 
+function getRuntimeDefaults (runtime) {
+  return runtime === 'deno' ? DENO_DEFAULTS : NODE_DEFAULTS
+}
+
+function getPrefix (prefix) {
+  return prefix ? `${prefix}@v` : 'v'
+}
+
+async function getPackage (
+  pkg,
+  runtime,
+  _globby = globby,
+  _existsSync = existsSync,
+  _core = core
+) {
+  let paths = await _globby(`*/**/${pkg}`, {
+    onlyDirectories: true
+  })
+
+  _core.info(`⚡️ matching paths: ${paths.join(', ')}`)
+
+  /**
+   * attempt to filter paths down by whether they are a module or not ie.
+   * contain a manifest file at the root of the directory
+   */
+  if (paths.length > 1) {
+    paths = paths.filter(path => _existsSync(
+      join(path, runtime === 'deno' ? DENO_MANIFEST : NODE_MANIFEST)
+    ))
+  }
+
+  /**
+   * Too many matching packages in the repo, so will fail fast, instead of guessing.
+   */
+  if (paths.length > 1) {
+    throw new Error(`Multiple paths matched. Cannot determine which package to bump ${paths.join(', ')}`)
+  }
+
+  if (paths.length === 0) {
+    throw new Error('No packages found. Cannot determine which package to bump')
+  }
+
+  const path = paths.shift()
+
+  return path
+}
+
 module.exports = {
-  run
+  run,
+  getRuntimeDefaults,
+  getPrefix,
+  getPackage
 }
