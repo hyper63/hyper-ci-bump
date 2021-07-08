@@ -70,7 +70,10 @@ async function run (
   }
 
   const tagPrefix = getPrefix(prefix)
-  const runtimeDefaults = getRuntimeDefaults(runtime)
+  const runtimeDefaults = filterRuntimeDefaults(
+    getRuntimeDefaults(runtime)
+  )
+
   const options = _rc('version', {
     ...COMMON_DEFAULTS,
     ...runtimeDefaults,
@@ -107,6 +110,15 @@ function getRuntimeDefaults (runtime) {
 
 function getPrefix (prefix) {
   return prefix ? `${prefix}@v` : 'v'
+}
+
+function filterRuntimeDefaults (runtimeDefaults, _existsSync = existsSync) {
+  return {
+    ...runtimeDefaults,
+    bumpFiles: runtimeDefaults.bumpFiles.filter(
+      ({ filename }) => _existsSync(filename)
+    )
+  }
 }
 
 async function getPackage (
@@ -150,6 +162,7 @@ async function getPackage (
 
 module.exports = {
   run,
+  filterRuntimeDefaults,
   getRuntimeDefaults,
   getPrefix,
   getPackage

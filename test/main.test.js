@@ -1,7 +1,7 @@
 
 const test = require('tape')
 
-const { getRuntimeDefaults, getPrefix, getPackage } = require('../main')
+const { getRuntimeDefaults, getPrefix, getPackage, filterRuntimeDefaults } = require('../main')
 
 const core = {
   info: () => {}
@@ -81,4 +81,27 @@ test('it should throw an error if no package is found', async t => {
   )
     .then(() => t.fail())
     .catch(err => t.ok(err))
+})
+
+test('it should filter the bumpFiles', async t => {
+  const queue = [true, false]
+  const mockedExistsSync = () => {
+    return queue.shift()
+  }
+
+  const res = filterRuntimeDefaults(
+    {
+      bumpFiles: [
+        {
+          filename: 'foo'
+        },
+        {
+          filename: 'bar'
+        }
+      ]
+    },
+    mockedExistsSync
+  )
+
+  t.equals(res.bumpFiles.length, 1)
 })
