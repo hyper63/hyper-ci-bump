@@ -10,11 +10,16 @@ const core = {
 test('it produces correct runtime defaults', t => {
   let res = getRuntimeDefaults('node')
 
-  t.equals(res.bumpFiles[0].filename, 'package.json')
+  t.equals(res.bumpFiles.length, 3)
 
   res = getRuntimeDefaults('deno')
 
-  t.equals(res.bumpFiles[0].filename, 'egg.json')
+  t.equals(res.bumpFiles.length, 3)
+
+  t.throws(
+    () => getRuntimeDefaults('foo_runtime')
+  )
+
   t.end()
 })
 
