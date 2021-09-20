@@ -14,6 +14,7 @@ const globby = __nccwpck_require__(3398)
 const rc = __nccwpck_require__(7353)
 const standardVersion = __nccwpck_require__(7217)
 
+const SUPPORTED_RUNTIMES = ['node', 'deno', 'javascript']
 const DENO_MANIFEST = 'egg.json'
 const NODE_MANIFEST = 'package.json'
 
@@ -33,18 +34,12 @@ const COMMON_DEFAULTS = {
 }
 
 /** @type {const('standard-version').Options} */
-const DENO_DEFAULTS = {
+const JS_DEFAULTS = {
   bumpFiles: [
     {
       filename: DENO_MANIFEST,
       type: 'json'
-    }
-  ]
-}
-
-/** @type {const('standard-version').Options} */
-const NODE_DEFAULTS = {
-  bumpFiles: [
+    },
     {
       filename: NODE_MANIFEST,
       type: 'json'
@@ -111,7 +106,11 @@ async function run (
 }
 
 function getRuntimeDefaults (runtime) {
-  return runtime === 'deno' ? DENO_DEFAULTS : NODE_DEFAULTS
+  if (SUPPORTED_RUNTIMES.includes(runtime.toLowerCase())) {
+    return JS_DEFAULTS
+  }
+
+  throw new Error(`Runtime ${runtime} not supported. Supported runtimes: ${SUPPORTED_RUNTIMES.join(', ')}`)
 }
 
 function getPrefix (prefix) {

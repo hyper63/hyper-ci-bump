@@ -38,7 +38,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: 16.x
       # Make sure your git user is set
       - name: set git user
         run: |
@@ -66,7 +66,7 @@ jobs:
 - *string* `bump-to` **Required**: the semver comptaible version to bump to
 - *string* `package` **Optional**: the package name that contains the files to bump. Great for repos with multiple independently versioned packages ie. in a monorepo. Example: `app-opine` will find a package in `*/**/app-opine`
 - *string* `prefix` **Optional**: prefix to use for the git tag. Example: `app-opine` prefix and `v1.3.2` version will result in a tag of `app-opine@v1.3.2`. **default**: the `package` input.
-- *string* `runtime` **Optional**: the runtime for the package. `node` or `deno`: This dictates which manifest files are bumped. `egg.json` for `deno`, and `package.json` and `package-lock.json` for `node`. **default**: `deno`
+- *string* `runtime` **Optional**: the runtime for the package: This dictates which manifest files are bumped. `egg.json` , `package.json` and `package-lock.json` for `node` or `deno`. Currently supports `node`, `deno`, or `javascript`. **default**: `deno`
 
 ### Outputs
 
