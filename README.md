@@ -66,7 +66,7 @@ jobs:
 - *string* `bump-to` **Required**: the semver comptaible version to bump to
 - *string* `package` **Optional**: the package name that contains the files to bump. Great for repos with multiple independently versioned packages ie. in a monorepo. Example: `app-opine` will find a package in `*/**/app-opine`
 - *string* `prefix` **Optional**: prefix to use for the git tag. Example: `app-opine` prefix and `v1.3.2` version will result in a tag of `app-opine@v1.3.2`. **default**: the `package` input.
-- *string* `runtime` **Optional**: the runtime for the package: This dictates which manifest files are bumped. `egg.json` , `package.json` and `package-lock.json` for `node` or `deno`. Currently supports `node`, `deno`, or `javascript`. **default**: `deno`
+- *string* `runtime` **Optional**: the runtime for the package: This dictates which manifest files are bumped. `egg.json` , `package.json` and `package-lock.json` for `node` or `deno`. Currently supports `node`, `deno`, or `javascript`. **default**: `javascript`
 
 ### Outputs
 

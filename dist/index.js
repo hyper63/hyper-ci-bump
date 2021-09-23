@@ -5,14 +5,7 @@
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 
-const { readFileSync, existsSync } = __nccwpck_require__(5747)
 const { join } = __nccwpck_require__(5622)
-
-const core = __nccwpck_require__(2186)
-
-const globby = __nccwpck_require__(3398)
-const rc = __nccwpck_require__(7353)
-const standardVersion = __nccwpck_require__(7217)
 
 const SUPPORTED_RUNTIMES = ['node', 'deno', 'javascript']
 const DENO_MANIFEST = 'egg.json'
@@ -51,127 +44,131 @@ const JS_DEFAULTS = {
   ]
 }
 
-async function run (
-  _sv = standardVersion,
-  _rc = rc,
-  _core = core
-) {
-  const runtime = _core.getInput('runtime') || 'deno'
-  const bumpTo = _core.getInput('bump-to')
-  const pkg = _core.getInput('package')
-  const prefix = _core.getInput('prefix') || pkg
+function lib ({
+  sv = __nccwpck_require__(7217),
+  rc = __nccwpck_require__(7353),
+  core = __nccwpck_require__(2186),
+  globby = __nccwpck_require__(3398),
+  existsSync = __nccwpck_require__(5747).existsSync,
+  readFileSync = __nccwpck_require__(5747).readFileSync
+} = {}) {
+  async function run () {
+    const runtime = core.getInput('runtime') || 'javascript'
+    const bumpTo = core.getInput('bump-to')
+    const pkg = core.getInput('package')
+    const prefix = core.getInput('prefix') || pkg
 
-  /**
+    /**
    * Need to find the package to bump
    */
-  if (pkg) {
-    const path = await getPackage(pkg, runtime)
-    _core.info(`⚡️ cd into directory ${path}...`)
-    process.chdir(path)
-  }
+    if (pkg) {
+      const path = await getPackage(pkg, runtime)
+      core.info(`⚡️ cd into directory ${path}...`)
+      process.chdir(path)
+    }
 
-  const tagPrefix = getPrefix(prefix)
-  const runtimeDefaults = filterRuntimeDefaults(
-    getRuntimeDefaults(runtime)
-  )
+    const tagPrefix = getPrefix(prefix)
+    const runtimeDefaults = filterRuntimeDefaults(
+      getRuntimeDefaults(runtime)
+    )
 
-  const options = _rc('version', {
-    ...COMMON_DEFAULTS,
-    ...runtimeDefaults,
-    releaseAs: bumpTo,
-    tagPrefix,
-    releaseCommitMessageFormat: pkg ? `chore(${pkg}): release {{currentTag}}` : 'chore(release): {{currentTag}}'
-  })
+    const options = rc('version', {
+      ...COMMON_DEFAULTS,
+      ...runtimeDefaults,
+      releaseAs: bumpTo,
+      tagPrefix,
+      releaseCommitMessageFormat: pkg ? `chore(${pkg}): release {{currentTag}}` : 'chore(release): {{currentTag}}'
+    })
 
-  _core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
-  await _sv({
-    ...options
-  })
+    core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
+    await sv({
+      ...options
+    })
 
-  let version
-  runtimeDefaults.bumpFiles.forEach(({ filename }) => {
-    const bumpedFileContents = readFileSync(filename, { encoding: 'utf-8' })
-    const v = JSON.parse(bumpedFileContents).version
-    version = v
-    _core.info(
+    let version
+    runtimeDefaults.bumpFiles.forEach(({ filename }) => {
+      const bumpedFileContents = readFileSync(filename, { encoding: 'utf-8' })
+      const v = JSON.parse(bumpedFileContents).version
+      version = v
+      core.info(
       `⚡️ version in ${filename} bumped to ${v}`
-    )
-  })
+      )
+    })
 
-  _core.setOutput('version', version)
-  // The tagging can be skipped, so only want to set this output, if tagging was actually performed
-  if (!options.skip.tag) {
-    _core.setOutput('tag', `${tagPrefix}${version}`)
-  }
-}
-
-function getRuntimeDefaults (runtime) {
-  if (SUPPORTED_RUNTIMES.includes(runtime.toLowerCase())) {
-    return JS_DEFAULTS
+    core.setOutput('version', version)
+    // The tagging can be skipped, so only want to set this output, if tagging was actually performed
+    if (!options.skip.tag) {
+      core.setOutput('tag', `${tagPrefix}${version}`)
+    }
   }
 
-  throw new Error(`Runtime ${runtime} not supported. Supported runtimes: ${SUPPORTED_RUNTIMES.join(', ')}`)
-}
+  function getRuntimeDefaults (runtime) {
+    if (SUPPORTED_RUNTIMES.includes(runtime.toLowerCase())) {
+      return JS_DEFAULTS
+    }
 
-function getPrefix (prefix) {
-  return prefix ? `${prefix}@v` : 'v'
-}
-
-function filterRuntimeDefaults (runtimeDefaults, _existsSync = existsSync) {
-  return {
-    ...runtimeDefaults,
-    bumpFiles: runtimeDefaults.bumpFiles.filter(
-      ({ filename }) => _existsSync(filename)
-    )
+    throw new Error(`Runtime ${runtime} not supported. Supported runtimes: ${SUPPORTED_RUNTIMES.join(', ')}`)
   }
-}
 
-async function getPackage (
-  pkg,
-  runtime,
-  _globby = globby,
-  _existsSync = existsSync,
-  _core = core
-) {
-  let paths = await _globby(`*/**/${pkg}`, {
-    onlyDirectories: true
-  })
+  function getPrefix (prefix) {
+    return prefix ? `${prefix}@v` : 'v'
+  }
 
-  _core.info(`⚡️ matching paths: ${paths.join(', ')}`)
+  function filterRuntimeDefaults (runtimeDefaults) {
+    return {
+      ...runtimeDefaults,
+      bumpFiles: runtimeDefaults.bumpFiles.filter(
+        ({ filename }) => existsSync(filename)
+      )
+    }
+  }
 
-  /**
+  async function getPackage (
+    pkg,
+    runtime
+  ) {
+    let paths = await globby(`*/**/${pkg}`, {
+      onlyDirectories: true
+    })
+
+    core.info(`⚡️ matching paths: ${paths.join(', ')}`)
+
+    /**
    * attempt to filter paths down by whether they are a module or not ie.
    * contain a manifest file at the root of the directory
    */
-  if (paths.length > 1) {
-    paths = paths.filter(path => _existsSync(
-      join(path, runtime === 'deno' ? DENO_MANIFEST : NODE_MANIFEST)
-    ))
-  }
+    if (paths.length > 1) {
+      paths = paths.filter(path => existsSync(
+        join(path, runtime === 'deno' ? DENO_MANIFEST : NODE_MANIFEST)
+      ))
+    }
 
-  /**
+    /**
    * Too many matching packages in the repo, so will fail fast, instead of guessing.
    */
-  if (paths.length > 1) {
-    throw new Error(`Multiple paths matched. Cannot determine which package to bump ${paths.join(', ')}`)
+    if (paths.length > 1) {
+      throw new Error(`Multiple paths matched. Cannot determine which package to bump ${paths.join(', ')}`)
+    }
+
+    if (paths.length === 0) {
+      throw new Error('No packages found. Cannot determine which package to bump')
+    }
+
+    const path = paths.shift()
+
+    return path
   }
 
-  if (paths.length === 0) {
-    throw new Error('No packages found. Cannot determine which package to bump')
+  return {
+    run,
+    filterRuntimeDefaults,
+    getRuntimeDefaults,
+    getPrefix,
+    getPackage
   }
-
-  const path = paths.shift()
-
-  return path
 }
 
-module.exports = {
-  run,
-  filterRuntimeDefaults,
-  getRuntimeDefaults,
-  getPrefix,
-  getPackage
-}
+module.exports = lib
 
 
 /***/ }),
@@ -748,7 +745,7 @@ exports.readdir = exports.readdirWithFileTypes = exports.read = void 0;
 const fsStat = __nccwpck_require__(109);
 const rpl = __nccwpck_require__(5288);
 const constants_1 = __nccwpck_require__(8838);
-const utils = __nccwpck_require__(6297);
+const utils = __nccwpck_require__(4260);
 const common = __nccwpck_require__(3847);
 function read(directory, settings, callback) {
     if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
@@ -880,7 +877,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.readdir = exports.readdirWithFileTypes = exports.read = void 0;
 const fsStat = __nccwpck_require__(109);
 const constants_1 = __nccwpck_require__(8838);
-const utils = __nccwpck_require__(6297);
+const utils = __nccwpck_require__(4260);
 const common = __nccwpck_require__(3847);
 function read(directory, settings) {
     if (!settings.stats && constants_1.IS_SUPPORT_READDIR_WITH_FILE_TYPES) {
@@ -992,7 +989,7 @@ exports.createDirentFromStats = createDirentFromStats;
 
 /***/ }),
 
-/***/ 6297:
+/***/ 4260:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
@@ -5103,7 +5100,7 @@ function __ncc_wildcard$0 (arg) {
 'use strict'
 const dateFormat = __nccwpck_require__(1512)
 const getPkgRepo = __nccwpck_require__(2213)
-const gitSemverTags = __nccwpck_require__(3856)
+const gitSemverTags = __nccwpck_require__(2408)
 const normalizePackageData = __nccwpck_require__(3188)
 const Q = __nccwpck_require__(6172)
 let gitRemoteOriginUrl
@@ -8138,7 +8135,7 @@ const concat = __nccwpck_require__(5107)
 const conventionalCommitsFilter = __nccwpck_require__(5003)
 const conventionalCommitsParser = __nccwpck_require__(1655)
 const conventionalChangelogPresetLoader = __nccwpck_require__(8079)
-const gitSemverTags = __nccwpck_require__(3856)
+const gitSemverTags = __nccwpck_require__(2408)
 const gitRawCommits = __nccwpck_require__(9834)
 const presetResolver = __nccwpck_require__(2626)
 
@@ -12116,7 +12113,7 @@ module.exports = Function.prototype.bind || implementation;
 "use strict";
 
 var parseSlug = __nccwpck_require__(3396);
-var normalizeData = __nccwpck_require__(5967);
+var normalizeData = __nccwpck_require__(6297);
 var hostedGitInfo = __nccwpck_require__(8869);
 var url = __nccwpck_require__(8835);
 var typos = __nccwpck_require__(8190);
@@ -12679,7 +12676,7 @@ function makeTypoWarning (providedName, probableName, field) {
 
 /***/ }),
 
-/***/ 5967:
+/***/ 6297:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 module.exports = normalize
@@ -14336,7 +14333,7 @@ module.exports = dir => {
 
 /***/ }),
 
-/***/ 3856:
+/***/ 2408:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -17782,7 +17779,7 @@ const merge2 = __nccwpck_require__(2578);
 const fastGlob = __nccwpck_require__(3664);
 const dirGlob = __nccwpck_require__(2738);
 const gitignore = __nccwpck_require__(9038);
-const {FilterStream, UniqueStream} = __nccwpck_require__(2408);
+const {FilterStream, UniqueStream} = __nccwpck_require__(3392);
 
 const DEFAULT_FILTER = () => false;
 
@@ -18564,7 +18561,7 @@ if (
 
 /***/ }),
 
-/***/ 2408:
+/***/ 3392:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 "use strict";
@@ -72332,7 +72329,7 @@ module.exports = function (rawMsg, newVersion) {
 /***/ 2224:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const gitSemverTags = __nccwpck_require__(3856)
+const gitSemverTags = __nccwpck_require__(2408)
 const semver = __nccwpck_require__(1383)
 
 module.exports = function (tagPrefix = undefined) {
@@ -75462,9 +75459,9 @@ var __webpack_exports__ = {};
 
 const core = __nccwpck_require__(2186)
 
-const { run } = __nccwpck_require__(5496)
+const { run } = __nccwpck_require__(5496)()
 
-run().catch(err => core.setFailed(err.message))
+run.catch(err => core.setFailed(err.message))
 
 })();
 

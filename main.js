@@ -1,12 +1,5 @@
 
-const { readFileSync, existsSync } = require('fs')
 const { join } = require('path')
-
-const core = require('@actions/core')
-
-const globby = require('globby')
-const rc = require('rc')
-const standardVersion = require('standard-version')
 
 const SUPPORTED_RUNTIMES = ['node', 'deno', 'javascript']
 const DENO_MANIFEST = 'egg.json'
@@ -45,124 +38,128 @@ const JS_DEFAULTS = {
   ]
 }
 
-async function run (
-  _sv = standardVersion,
-  _rc = rc,
-  _core = core
-) {
-  const runtime = _core.getInput('runtime') || 'deno'
-  const bumpTo = _core.getInput('bump-to')
-  const pkg = _core.getInput('package')
-  const prefix = _core.getInput('prefix') || pkg
+function lib ({
+  sv = require('standard-version'),
+  rc = require('rc'),
+  core = require('@actions/core'),
+  globby = require('globby'),
+  existsSync = require('fs').existsSync,
+  readFileSync = require('fs').readFileSync
+} = {}) {
+  async function run () {
+    const runtime = core.getInput('runtime') || 'javascript'
+    const bumpTo = core.getInput('bump-to')
+    const pkg = core.getInput('package')
+    const prefix = core.getInput('prefix') || pkg
 
-  /**
+    /**
    * Need to find the package to bump
    */
-  if (pkg) {
-    const path = await getPackage(pkg, runtime)
-    _core.info(`⚡️ cd into directory ${path}...`)
-    process.chdir(path)
-  }
+    if (pkg) {
+      const path = await getPackage(pkg, runtime)
+      core.info(`⚡️ cd into directory ${path}...`)
+      process.chdir(path)
+    }
 
-  const tagPrefix = getPrefix(prefix)
-  const runtimeDefaults = filterRuntimeDefaults(
-    getRuntimeDefaults(runtime)
-  )
+    const tagPrefix = getPrefix(prefix)
+    const runtimeDefaults = filterRuntimeDefaults(
+      getRuntimeDefaults(runtime)
+    )
 
-  const options = _rc('version', {
-    ...COMMON_DEFAULTS,
-    ...runtimeDefaults,
-    releaseAs: bumpTo,
-    tagPrefix,
-    releaseCommitMessageFormat: pkg ? `chore(${pkg}): release {{currentTag}}` : 'chore(release): {{currentTag}}'
-  })
+    const options = rc('version', {
+      ...COMMON_DEFAULTS,
+      ...runtimeDefaults,
+      releaseAs: bumpTo,
+      tagPrefix,
+      releaseCommitMessageFormat: pkg ? `chore(${pkg}): release {{currentTag}}` : 'chore(release): {{currentTag}}'
+    })
 
-  _core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
-  await _sv({
-    ...options
-  })
+    core.info(`⚡️ Running with options: ${JSON.stringify(options)}...`)
+    await sv({
+      ...options
+    })
 
-  let version
-  runtimeDefaults.bumpFiles.forEach(({ filename }) => {
-    const bumpedFileContents = readFileSync(filename, { encoding: 'utf-8' })
-    const v = JSON.parse(bumpedFileContents).version
-    version = v
-    _core.info(
+    let version
+    runtimeDefaults.bumpFiles.forEach(({ filename }) => {
+      const bumpedFileContents = readFileSync(filename, { encoding: 'utf-8' })
+      const v = JSON.parse(bumpedFileContents).version
+      version = v
+      core.info(
       `⚡️ version in ${filename} bumped to ${v}`
-    )
-  })
+      )
+    })
 
-  _core.setOutput('version', version)
-  // The tagging can be skipped, so only want to set this output, if tagging was actually performed
-  if (!options.skip.tag) {
-    _core.setOutput('tag', `${tagPrefix}${version}`)
-  }
-}
-
-function getRuntimeDefaults (runtime) {
-  if (SUPPORTED_RUNTIMES.includes(runtime.toLowerCase())) {
-    return JS_DEFAULTS
+    core.setOutput('version', version)
+    // The tagging can be skipped, so only want to set this output, if tagging was actually performed
+    if (!options.skip.tag) {
+      core.setOutput('tag', `${tagPrefix}${version}`)
+    }
   }
 
-  throw new Error(`Runtime ${runtime} not supported. Supported runtimes: ${SUPPORTED_RUNTIMES.join(', ')}`)
-}
+  function getRuntimeDefaults (runtime) {
+    if (SUPPORTED_RUNTIMES.includes(runtime.toLowerCase())) {
+      return JS_DEFAULTS
+    }
 
-function getPrefix (prefix) {
-  return prefix ? `${prefix}@v` : 'v'
-}
-
-function filterRuntimeDefaults (runtimeDefaults, _existsSync = existsSync) {
-  return {
-    ...runtimeDefaults,
-    bumpFiles: runtimeDefaults.bumpFiles.filter(
-      ({ filename }) => _existsSync(filename)
-    )
+    throw new Error(`Runtime ${runtime} not supported. Supported runtimes: ${SUPPORTED_RUNTIMES.join(', ')}`)
   }
-}
 
-async function getPackage (
-  pkg,
-  runtime,
-  _globby = globby,
-  _existsSync = existsSync,
-  _core = core
-) {
-  let paths = await _globby(`*/**/${pkg}`, {
-    onlyDirectories: true
-  })
+  function getPrefix (prefix) {
+    return prefix ? `${prefix}@v` : 'v'
+  }
 
-  _core.info(`⚡️ matching paths: ${paths.join(', ')}`)
+  function filterRuntimeDefaults (runtimeDefaults) {
+    return {
+      ...runtimeDefaults,
+      bumpFiles: runtimeDefaults.bumpFiles.filter(
+        ({ filename }) => existsSync(filename)
+      )
+    }
+  }
 
-  /**
+  async function getPackage (
+    pkg,
+    runtime
+  ) {
+    let paths = await globby(`*/**/${pkg}`, {
+      onlyDirectories: true
+    })
+
+    core.info(`⚡️ matching paths: ${paths.join(', ')}`)
+
+    /**
    * attempt to filter paths down by whether they are a module or not ie.
    * contain a manifest file at the root of the directory
    */
-  if (paths.length > 1) {
-    paths = paths.filter(path => _existsSync(
-      join(path, runtime === 'deno' ? DENO_MANIFEST : NODE_MANIFEST)
-    ))
-  }
+    if (paths.length > 1) {
+      paths = paths.filter(path => existsSync(
+        join(path, runtime === 'deno' ? DENO_MANIFEST : NODE_MANIFEST)
+      ))
+    }
 
-  /**
+    /**
    * Too many matching packages in the repo, so will fail fast, instead of guessing.
    */
-  if (paths.length > 1) {
-    throw new Error(`Multiple paths matched. Cannot determine which package to bump ${paths.join(', ')}`)
+    if (paths.length > 1) {
+      throw new Error(`Multiple paths matched. Cannot determine which package to bump ${paths.join(', ')}`)
+    }
+
+    if (paths.length === 0) {
+      throw new Error('No packages found. Cannot determine which package to bump')
+    }
+
+    const path = paths.shift()
+
+    return path
   }
 
-  if (paths.length === 0) {
-    throw new Error('No packages found. Cannot determine which package to bump')
+  return {
+    run,
+    filterRuntimeDefaults,
+    getRuntimeDefaults,
+    getPrefix,
+    getPackage
   }
-
-  const path = paths.shift()
-
-  return path
 }
 
-module.exports = {
-  run,
-  filterRuntimeDefaults,
-  getRuntimeDefaults,
-  getPrefix,
-  getPackage
-}
+module.exports = lib
