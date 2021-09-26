@@ -39,10 +39,7 @@ test('it should produce the correct package', async t => {
     core
   })
 
-  const res = await getPackage(
-    mockedPath,
-    'deno'
-  )
+  const res = await getPackage(mockedPath)
 
   t.assert(mockedPath, res)
 })
@@ -59,10 +56,7 @@ test('it should produce the correct package from multiple', async t => {
     core
   })
 
-  const res = await getPackage(
-    'foo',
-    'deno'
-  )
+  const res = await getPackage('foo')
 
   t.assert(mockedPath, res)
 })
@@ -76,10 +70,7 @@ test('it should throw an error if more than one package is found', async t => {
     core
   })
 
-  await getPackage(
-    'foo',
-    'deno'
-  )
+  await getPackage('foo')
     .then(() => t.fail())
     .catch(err => t.ok(err))
 })
@@ -91,10 +82,7 @@ test('it should throw an error if no package is found', async t => {
     core
   })
 
-  await getPackage(
-    'foo',
-    'deno'
-  )
+  await getPackage('foo')
     .then(() => t.fail())
     .catch(err => t.ok(err))
 })

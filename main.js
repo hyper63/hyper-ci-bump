@@ -118,8 +118,7 @@ function lib ({
   }
 
   async function getPackage (
-    pkg,
-    runtime
+    pkg
   ) {
     let paths = await globby(`*/**/${pkg}`, {
       onlyDirectories: true
@@ -132,9 +131,14 @@ function lib ({
    * contain a manifest file at the root of the directory
    */
     if (paths.length > 1) {
-      paths = paths.filter(path => existsSync(
-        join(path, runtime === 'deno' ? DENO_MANIFEST : NODE_MANIFEST)
-      ))
+      paths = paths.filter(path =>
+        existsSync(
+          join(path, DENO_MANIFEST)
+        ) ||
+        existsSync(
+          join(path, NODE_MANIFEST)
+        )
+      )
     }
 
     /**
