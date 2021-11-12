@@ -59,6 +59,8 @@ jobs:
           git push --follow-tags
 ```
 
+> This module itself is versioned using `hyper-ci-bump`. Check out [the tag and release workflow](./.github/workflows/tag-and-release.yml)
+
 ## API
 
 ### Inputs
