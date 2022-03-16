@@ -3,7 +3,6 @@
   "version": "1.0.1",
   "description": "Github Action to bump manifest files",
   "scripts": {
-    "build": "rimraf dist && ncc build",
     "prepare": "husky install",
     "test": "tape test/**/*.test.js"
   },

@@ -23,5 +23,5 @@ outputs:
   tag:
     description: 'The git tag created'
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: 'node16'
+  main: 'index.js'
