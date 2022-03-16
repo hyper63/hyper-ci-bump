@@ -7,6 +7,17 @@ const core = {
   info: () => {}
 }
 
+test('it produces the correct version', t => {
+  const { getBumpTo } = lib()
+
+  t.equals(getBumpTo('v2.3.0'), 'v2.3.0')
+  t.equals(getBumpTo('semver'), undefined)
+  t.equals(getBumpTo('semver '), undefined)
+  t.equals(getBumpTo(), undefined)
+
+  t.end()
+})
+
 test('it produces correct runtime defaults', t => {
   const { getRuntimeDefaults } = lib()
   let res = getRuntimeDefaults('node')

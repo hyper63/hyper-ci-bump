@@ -48,13 +48,13 @@ function lib ({
 } = {}) {
   async function run () {
     const runtime = core.getInput('runtime') || 'javascript'
-    const bumpTo = core.getInput('bump-to')
     const pkg = core.getInput('package')
     const prefix = core.getInput('prefix') || pkg
+    let bumpTo = core.getInput('bump-to')
 
     /**
-   * Need to find the package to bump
-   */
+     * Need to find the package to bump
+     */
     if (pkg) {
       const path = await getPackage(pkg, runtime)
       core.info(`⚡️ cd into directory ${path}...`)
@@ -65,6 +65,8 @@ function lib ({
     const runtimeDefaults = filterRuntimeDefaults(
       getRuntimeDefaults(runtime)
     )
+
+    bumpTo = getBumpTo(bumpTo)
 
     const options = rc('version', {
       ...COMMON_DEFAULTS,
@@ -94,6 +96,14 @@ function lib ({
     if (!options.skip.tag) {
       core.setOutput('tag', `${tagPrefix}${version}`)
     }
+  }
+
+  function getBumpTo (bumpTo) {
+    if (!bumpTo || bumpTo.trim() === 'semver') {
+      bumpTo = undefined // let standard-version determine the version
+    }
+
+    return bumpTo
   }
 
   function getRuntimeDefaults (runtime) {
@@ -160,6 +170,7 @@ function lib ({
   return {
     run,
     filterRuntimeDefaults,
+    getBumpTo,
     getRuntimeDefaults,
     getPrefix,
     getPackage
