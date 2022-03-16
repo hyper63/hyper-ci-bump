@@ -14,7 +14,7 @@
 
 This action can be used as part of any Github workflow.
 
-- Bump manifest files
+- Bump manifest files (according to latest semver compatible Git tag)
 - Generate changelog (disabled by default)
 - commit changes
 - tag new commit
@@ -28,14 +28,17 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: the server version to bump to
+        description: the semver version to bump to ('semver' to semver bump based on commits)
         required: true
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+        # 0 means pull down all history, so all tags can be grep'd
+          fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
           node-version: 16.x
@@ -65,10 +68,16 @@ jobs:
 
 ### Inputs
 
-- *string* `bump-to` **Required**: the semver comptaible version to bump to
+- *string* `bump-to` **Optional**: the semver comptaible version to bump to. If the string "semver" or nothing is passed, then it will semver bump the package based on commit messages, following conventional-commit standards.
 - *string* `package` **Optional**: the package name that contains the files to bump. Great for repos with multiple independently versioned packages ie. in a monorepo. Example: `app-opine` will find a package in `*/**/app-opine`
 - *string* `prefix` **Optional**: prefix to use for the git tag. Example: `app-opine` prefix and `v1.3.2` version will result in a tag of `app-opine@v1.3.2`. **default**: the `package` input.
-- *string* `runtime` **Optional**: the runtime for the package: This dictates which manifest files are bumped. `egg.json` , `package.json` and `package-lock.json` for `node` or `deno`. Currently supports `node`, `deno`, or `javascript`. **default**: `javascript`
+- *string* `runtime` **Optional**: This dictates which manifest files are bumped.  Currently supports `node`, `deno`, or `javascript`. The following table shows which manifest files will be bumped for each runtime. **default**: `javascript`
+
+| runtime | manifest files bumped |
+| ------------- | ------------- |
+| `deno`, `node`, `javascript` | `egg.json`, `package.json`, `package-lock.json`  |
+
+TODO: add some more run times
 
 ### Outputs
 
@@ -91,10 +100,12 @@ Now a changelog will be generated and/or appended to for the repo. Any of the fo
 
 `bump`, `changelog`, `commit`, `tag`
 
+By default, `bump`, `commit`, and `tag` are enabled.
+
 ## License
 
 Apache-2.0
 
 ## Contributing
 
-Logic can be found in `main.js` and dependencies are provided via `index.js`. There is a `pre-commit` git hook that will rebuild any `*.js` changes into `dist`, so ensure git hooks are installed by running `npm i` or `npm prepare`. 
+Logic can be found in `main.js` and dependencies are provided via `index.js`. This is a github action, so `node_modules` are intentionally committed to the repo.
