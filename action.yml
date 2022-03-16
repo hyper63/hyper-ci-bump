@@ -3,7 +3,7 @@ name: 'Bump'
 description: 'Bump the manifest and generate changelogs'
 inputs:
   bump-to:
-    description: 'semver version to bump to'
+    description: 'the semver version to bump to ("semver" to bump based on commits)'
     required: true
   package:
     description: 'in a monorepo, package that contains the files to be bumped ie. app-opine -> packages/app-opine'
@@ -21,7 +21,7 @@ outputs:
   version:
     description: 'The semver version bumped to'
   tag:
-    description: 'The git tag created'
+    description: 'The git tag created, if created. undefined if not created.'
 runs:
   using: 'node16'
   main: 'index.js'
