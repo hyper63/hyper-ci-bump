@@ -52,6 +52,9 @@ function lib ({
     const prefix = core.getInput('prefix') || pkg
     let bumpTo = core.getInput('bump-to')
 
+    bumpTo = getBumpTo(bumpTo)
+
+    let commitsOnPath
     /**
      * Need to find the package to bump
      */
@@ -59,6 +62,9 @@ function lib ({
       const path = await getPackage(pkg, runtime)
       core.info(`⚡️ cd into directory ${path}...`)
       process.chdir(path)
+      // We've already cd'd into the directory, so just use . (cur directory)
+      // This is ultimately passed to `git log` which runs in cwd
+      commitsOnPath = bumpTo ? undefined : '.'
     }
 
     const tagPrefix = getPrefix(prefix)
@@ -66,12 +72,11 @@ function lib ({
       getRuntimeDefaults(runtime)
     )
 
-    bumpTo = getBumpTo(bumpTo)
-
     const options = rc('version', {
       ...COMMON_DEFAULTS,
       ...runtimeDefaults,
       releaseAs: bumpTo,
+      path: commitsOnPath,
       tagPrefix,
       releaseCommitMessageFormat: pkg ? `chore(${pkg}): release {{currentTag}}` : 'chore(release): {{currentTag}}'
     })
