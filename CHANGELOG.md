@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/hyper63/hyper-ci-bump/compare/v1.1.1...v1.1.2) (2022-03-17)
+
+
+### Bug Fixes
+
+* add path when pkg is defined to filter commits ([af521df](https://github.com/hyper63/hyper-ci-bump/commit/af521dfe0a2133b2cf9deec1a2d3c7b0c0bc39c0))
+
 ### [1.1.1](https://github.com/hyper63/hyper-ci-bump/compare/v1.1.0...v1.1.1) (2022-03-16)
 
 ## [1.1.0](https://github.com/hyper63/hyper-ci-bump/compare/v1.0.1...v1.1.0) (2022-03-16)
