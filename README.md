@@ -116,7 +116,9 @@ Your token will need to have `repo` permissions:
 
 - _string_ `bump-to` **Optional**: the semver comptaible version to bump to. If
   the string "semver" or nothing is passed, then it will semver bump the package
-  based on commit messages, following conventional-commit standards.
+  based on commit messages, following conventional-commit standards. When semver
+  bumping, the most recent git tag is used as the base version. **If no base 
+  git tag is found, `v1.0.0` is used as the base to bump from**.
 - _string_ `package` **Optional**: the package name that contains the files to
   bump. Great for repos with multiple independently versioned packages ie. in a
   monorepo. Example: `app-opine` will find a package in `*/**/app-opine`
