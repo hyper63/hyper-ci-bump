@@ -64,7 +64,7 @@ function lib ({
       process.chdir(path)
       // We've already cd'd into the directory, so just use . (cur directory)
       // This is ultimately passed to `git log` which runs in cwd
-      commitsOnPath = bumpTo ? undefined : '.'
+      commitsOnPath = '.'
     }
 
     const tagPrefix = getPrefix(prefix)
@@ -92,7 +92,7 @@ function lib ({
       const v = JSON.parse(bumpedFileContents).version
       version = v
       core.info(
-      `⚡️ version in ${filename} bumped to ${v}`
+        `⚡️ version in ${filename} bumped to ${v}`
       )
     })
 
