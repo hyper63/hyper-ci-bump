@@ -4,11 +4,19 @@
 
 ---
 
-## Table of Contents
+<!-- toc -->
 
 - [Getting Started](#getting-started)
+- [Using in a workflow](#using-in-a-workflow)
+  - [Triggering subsequent workflows](#triggering-subsequent-workflows)
 - [API](#api)
+  - [Inputs](#inputs)
+  - [Outputs](#outputs)
+  - [Configuration](#configuration)
 - [License](#license)
+- [Contributing](#contributing)
+
+<!-- tocstop -->
 
 ## Getting Started
 
@@ -47,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-        # 0 means pull down all history, so all tags can be grep'd
+          # 0 means pull down all history, so all tags can be grep'd
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
@@ -117,7 +125,7 @@ Your token will need to have `repo` permissions:
 - _string_ `bump-to` **Optional**: the semver comptaible version to bump to. If
   the string "semver" or nothing is passed, then it will semver bump the package
   based on commit messages, following conventional-commit standards. When semver
-  bumping, the most recent git tag is used as the base version. **If no base 
+  bumping, the most recent git tag is used as the base version. **If no base
   git tag is found, `v1.0.0` is used as the base to bump from**.
 - _string_ `package` **Optional**: the package name that contains the files to
   bump. Great for repos with multiple independently versioned packages ie. in a
