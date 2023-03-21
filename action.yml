@@ -24,4 +24,4 @@ outputs:
     description: 'The git tag created, if created. undefined if not created.'
 runs:
   using: 'node16'
-  main: 'index.js'
+  main: 'dist/index.js'
