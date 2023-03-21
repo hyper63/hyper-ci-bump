@@ -7,7 +7,7 @@
     "build": "ncc build index.js --license LICENSES.txt",
     "format": "standard --fix .",
     "prepare": "husky install",
-    "test": "tape test/**/*.test.js"
+    "test": "vitest"
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
@@ -22,7 +22,7 @@
     "lint-staged": "^13.2.0",
     "rimraf": "^4.4.0",
     "standard": "^17.0.0",
-    "tape": "^5.6.3"
+    "vitest": "^0.29.7"
   },
   "standard": {
     "ignore": [
