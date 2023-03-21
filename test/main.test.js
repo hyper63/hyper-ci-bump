@@ -1,126 +1,129 @@
-
-const test = require('tape')
+import { test, describe, expect } from 'vitest'
 
 const lib = require('../main')
 
 const core = {
-  info: () => {}
+  info: () => { }
 }
 
-test('it produces the correct version', t => {
-  const { getBumpTo } = lib()
+describe('main', () => {
+  describe('getBumpTo', () => {
+    test('it produces the correct version', t => {
+      const { getBumpTo } = lib()
 
-  t.equals(getBumpTo('v2.3.0'), 'v2.3.0')
-  t.equals(getBumpTo('semver'), undefined)
-  t.equals(getBumpTo('semver '), undefined)
-  t.equals(getBumpTo(), undefined)
-
-  t.end()
-})
-
-test('it produces correct runtime defaults', t => {
-  const { getRuntimeDefaults } = lib()
-  let res = getRuntimeDefaults('node')
-
-  t.equals(res.bumpFiles.length, 3)
-
-  res = getRuntimeDefaults('deno')
-
-  t.equals(res.bumpFiles.length, 3)
-
-  t.throws(
-    () => getRuntimeDefaults('foo_runtime')
-  )
-
-  t.end()
-})
-
-test('it produces the correct prefix', t => {
-  const { getPrefix } = lib()
-  t.equals(getPrefix(), 'v')
-  t.equals(getPrefix('foo'), 'foo@v')
-  t.end()
-})
-
-test('it should produce the correct package', async t => {
-  const mockedPath = 'packages/foo'
-  const { getPackage } = lib({
-    globby: () => Promise.resolve([mockedPath]),
-    existsSync: () => true,
-    core
+      expect(getBumpTo('v2.3.0')).toBe('v2.3.0')
+      expect(getBumpTo('semver')).toBeUndefined()
+      expect(getBumpTo('semver ')).toBeUndefined()
+      expect(getBumpTo()).toBeUndefined()
+    })
   })
 
-  const res = await getPackage(mockedPath)
+  describe('getRuntimeDefaults', () => {
+    test('it produces correct runtime defaults', t => {
+      const { getRuntimeDefaults } = lib()
+      let res = getRuntimeDefaults('node')
 
-  t.assert(mockedPath, res)
-})
+      expect(res.bumpFiles.length).toBe(3)
 
-test('it should produce the correct package from multiple', async t => {
-  const mockedPath = 'packages/foo'
-  const queue = [true, false]
+      res = getRuntimeDefaults('deno')
 
-  const { getPackage } = lib({
-    globby: () => Promise.resolve([mockedPath, '/packages/lib/foo']),
-    existsSync: () => {
-      return queue.shift()
-    },
-    core
+      expect(res.bumpFiles.length).toBe(3)
+      expect(() => getRuntimeDefaults('foo_runtime')).toThrow()
+    })
   })
 
-  const res = await getPackage('foo')
-
-  t.assert(mockedPath, res)
-})
-
-test('it should throw an error if more than one package is found', async t => {
-  const mockedPath = 'packages/foo'
-
-  const { getPackage } = lib({
-    globby: () => Promise.resolve([mockedPath, '/packages/lib/foo']),
-    existsSync: () => true,
-    core
+  describe('getPrefix', () => {
+    test('it produces the correct prefix', t => {
+      const { getPrefix } = lib()
+      expect(getPrefix()).toBe('v')
+      expect(getPrefix('foo')).toBe('foo@v')
+    })
   })
 
-  await getPackage('foo')
-    .then(() => t.fail())
-    .catch(err => t.ok(err))
-})
+  describe('getPackage', () => {
+    test('it should produce the correct package', async t => {
+      const mockedPath = 'packages/foo'
+      const { getPackage } = lib({
+        globby: () => Promise.resolve([mockedPath]),
+        existsSync: () => true,
+        core
+      })
 
-test('it should throw an error if no package is found', async t => {
-  const { getPackage } = lib({
-    globby: () => Promise.resolve([]),
-    existsSync: () => true,
-    core
-  })
+      const res = await getPackage(mockedPath)
 
-  await getPackage('foo')
-    .then(() => t.fail())
-    .catch(err => t.ok(err))
-})
+      expect(mockedPath).toBe(res)
+    })
 
-test('it should filter the bumpFiles', async t => {
-  const queue = [true, false]
+    test('it should produce the correct package from multiple', async t => {
+      const mockedPath = 'packages/foo'
+      const queue = [true, false]
 
-  const { filterRuntimeDefaults } = lib({
-    globby: () => Promise.resolve([]),
-    existsSync: () => {
-      return queue.shift()
-    },
-    core
-  })
-
-  const res = filterRuntimeDefaults(
-    {
-      bumpFiles: [
-        {
-          filename: 'foo'
+      const { getPackage } = lib({
+        globby: () => Promise.resolve([mockedPath, '/packages/lib/foo']),
+        existsSync: () => {
+          return queue.shift()
         },
-        {
-          filename: 'bar'
-        }
-      ]
-    }
-  )
+        core
+      })
 
-  t.equals(res.bumpFiles.length, 1)
+      const res = await getPackage('foo')
+
+      expect(mockedPath).toBe(res)
+    })
+
+    test('it should throw an error if more than one package is found', async t => {
+      const mockedPath = 'packages/foo'
+
+      const { getPackage } = lib({
+        globby: () => Promise.resolve([mockedPath, '/packages/lib/foo']),
+        existsSync: () => true,
+        core
+      })
+
+      await getPackage('foo')
+        .then(() => expect(false).toBe(true))
+        .catch(err => expect(err).toBeDefined())
+    })
+
+    test('it should throw an error if no package is found', async t => {
+      const { getPackage } = lib({
+        globby: () => Promise.resolve([]),
+        existsSync: () => true,
+        core
+      })
+
+      await getPackage('foo')
+        .then(() => expect.fail())
+        .catch(err => expect(err).toBeDefined())
+    })
+  })
+
+  describe('filterRuntimeDefaults', () => {
+    test('it should filter the bumpFiles', async t => {
+      const queue = [true, false]
+
+      const { filterRuntimeDefaults } = lib({
+        globby: () => Promise.resolve([]),
+        existsSync: () => {
+          return queue.shift()
+        },
+        core
+      })
+
+      const res = filterRuntimeDefaults(
+        {
+          bumpFiles: [
+            {
+              filename: 'foo'
+            },
+            {
+              filename: 'bar'
+            }
+          ]
+        }
+      )
+
+      expect(res.bumpFiles.length).toBe(1)
+    })
+  })
 })
