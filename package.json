@@ -1,8 +1,11 @@
 {
   "name": "hyper-ci-bump",
   "version": "1.1.2",
+  "main": "dist/index.js",
   "description": "Github Action to bump manifest files",
   "scripts": {
+    "build": "ncc build index.js --license LICENSES.txt",
+    "format": "standard --fix .",
     "prepare": "husky install",
     "test": "tape test/**/*.test.js"
   },
