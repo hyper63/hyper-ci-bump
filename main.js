@@ -187,4 +187,4 @@ function lib ({
   }
 }
 
-module.exports = lib
+export default lib
