@@ -69,7 +69,7 @@ function lib ({
       process.chdir(path)
       // We've already cd'd into the directory, so just use . (cur directory)
       // This is ultimately passed to `git log` which runs in cwd
-      commitsOnPath = bumpTo ? undefined : '.'
+      commitsOnPath = '.'
     }
 
     const tagPrefix = getPrefix(prefix)
