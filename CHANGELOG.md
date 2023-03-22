@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 2.0.1 (2023-03-22)
+
+
+### Bug Fixes
+
+* always use . when bump a specific package [#4](https://github.com/hyper63/hyper-ci-bump/issues/4) ([8f102de](https://github.com/hyper63/hyper-ci-bump/commit/8f102deae8990c1ed68b88e0258f46e83f8cfc9d))
+
 ## 2.0.0 (2023-03-22)
 
 
