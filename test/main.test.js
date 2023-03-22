@@ -1,6 +1,6 @@
 import { test, describe, expect } from 'vitest'
 
-const lib = require('../main')
+import lib from './main'
 
 const core = {
   info: () => { }

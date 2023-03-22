@@ -1,5 +1,5 @@
 
-const { join } = require('path')
+import { join } from 'node:path'
 
 const SUPPORTED_RUNTIMES = ['node', 'deno', 'javascript']
 const DENO_MANIFEST = 'egg.json'
@@ -38,13 +38,18 @@ const JS_DEFAULTS = {
   ]
 }
 
+/**
+ *
+ * @param {*} param0
+ * @returns
+ */
 function lib ({
-  sv = require('standard-version'),
-  rc = require('rc'),
-  core = require('@actions/core'),
-  globby = require('globby'),
-  existsSync = require('fs').existsSync,
-  readFileSync = require('fs').readFileSync
+  sv,
+  rc,
+  core,
+  globby,
+  existsSync,
+  readFileSync
 } = {}) {
   async function run () {
     const runtime = core.getInput('runtime') || 'javascript'
@@ -92,7 +97,7 @@ function lib ({
       const v = JSON.parse(bumpedFileContents).version
       version = v
       core.info(
-      `⚡️ version in ${filename} bumped to ${v}`
+        `⚡️ version in ${filename} bumped to ${v}`
       )
     })
 
