@@ -1,27 +1,26 @@
-
-name: 'Bump'
-description: 'Bump the manifest and generate changelogs'
+name: "Bump"
+description: "Bump the manifest and generate changelogs"
 inputs:
   bump-to:
     description: 'the semver version to bump to ("semver" to bump based on commits)'
     required: true
   package:
-    description: 'in a monorepo, package that contains the files to be bumped ie. app-opine -> packages/app-opine'
+    description: "in a monorepo, package that contains the files to be bumped ie. app-opine -> packages/app-opine"
     required: false
-    default: ''
+    default: ""
   prefix:
-    description: 'string to use as the tag prefix ie. hyper-app-opine -> hyper-app-opine@v1.2.3. Defaults to the input for package'
+    description: "string to use as the tag prefix ie. hyper-app-opine -> hyper-app-opine@v1.2.3. Defaults to the input for package"
     required: false
-    default: ''
+    default: ""
   runtime:
-    description: 'runtime for project node or deno. default: deno'
+    description: "runtime for project node or deno. default: deno"
     required: false
     default: deno
 outputs:
   version:
-    description: 'The semver version bumped to'
+    description: "The semver version bumped to"
   tag:
-    description: 'The git tag created, if created. undefined if not created.'
+    description: "The git tag created, if created. undefined if not created."
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: "node16"
+  main: "index.js"
