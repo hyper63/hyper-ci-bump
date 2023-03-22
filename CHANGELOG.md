@@ -1,6 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## 2.0.0 (2023-03-22)
+
+
+### Bug Fixes
+
+* broken esm imports ([a4b3cfd](https://github.com/hyper63/hyper-ci-bump/commit/a4b3cfdba2c0df700ffe4662afd5496e99d17df3))
 
 ### [1.1.2](https://github.com/hyper63/hyper-ci-bump/compare/v1.1.1...v1.1.2) (2022-03-17)
 
