@@ -1,9 +1,9 @@
 
 import { existsSync, readFileSync } from 'node:fs'
 import * as core from '@actions/core'
-import * as globby from 'globby'
-import * as rc from 'rc'
-import * as sv from 'commit-and-tag-version'
+import { globby } from 'globby'
+import rc from 'rc'
+import sv from 'commit-and-tag-version'
 
 import lib from './main.js'
 
