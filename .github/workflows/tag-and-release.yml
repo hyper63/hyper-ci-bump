@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
+        with:
+          # Allows for pushes from this workflow to trigger subsequent workflows 
+          token: ${{ secrets.CI_GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
@@ -29,7 +33,7 @@ jobs:
         id: bump
         uses: hyper63/hyper-ci-bump@main
         with:
-          bump-to: ${{github.event.inputs.version}}
+          bump-to: ${{ github.event.inputs.version }}
 
       - name: ⬆️ Push
         run: |
@@ -39,6 +43,6 @@ jobs:
         if: steps.bump.outputs.tag
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{steps.bump.outputs.tag}}
+          tag_name: ${{ steps.bump.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}

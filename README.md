@@ -32,50 +32,53 @@ A great way to use this action is part of a
 With this, tagging and releasing can all be done via the Github UI!
 
 ```yml
-name: Tag and Release
+name: 🔖 Tag and Release
 
 on:
   workflow_dispatch:
     inputs:
+      # See https://github.com/hyper63/hyper-ci-bump#inputs for available inputs for the bump action
       version:
-        description: the semver version to bump to ('semver' to semver bump based on commits)
+        description: the semver version to bump to
         required: true
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
         with:
-        # 0 means pull down all history, so all tags can be grep'd
+          # Allows for pushes from this workflow to trigger subsequent workflows
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # 0 means pull down all history, so all tags can be grep'd
           fetch-depth: 0
-      - uses: actions/setup-node@v2
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
-      # Make sure your git user is set
-      - name: set git user
+          node-version: 18.x
+
+      - name: 🤓 Set Git User
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-      # Pull in the action
-      - name: bump
+
+      - name: ✊ Bump
         id: bump
-        uses: hyper63/hyper-ci-bump@main
+        uses: hyper63/hyper-ci-bump@v2
         with:
-          bump-to: ${{github.event.inputs.version}}
-          package: ${{github.event.inputs.package}}
-          prefix: ${{github.event.inputs.prefix}}
-          runtime: ${{github.event.inputs.runtime}}
-      # Push the new commits, changelog, and tags back to the repo
-      - name: push
+          bump-to: ${{ github.event.inputs.version }}
+
+      - name: ⬆️ Push
         run: |
           git push --follow-tags
-      # Create a github release tied to the new tag
-      - name: create github release
+
+      - name: 🤖 Create Github Release
         if: steps.bump.outputs.tag
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{steps.bump.outputs.tag}}
+          tag_name: ${{ steps.bump.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -117,7 +120,7 @@ Your token will need to have `repo` permissions:
 - _string_ `bump-to` **Optional**: the semver comptaible version to bump to. If
   the string "semver" or nothing is passed, then it will semver bump the package
   based on commit messages, following conventional-commit standards. When semver
-  bumping, the most recent git tag is used as the base version. **If no base 
+  bumping, the most recent git tag is used as the base version. **If no base
   git tag is found, `v1.0.0` is used as the base to bump from**.
 - _string_ `package` **Optional**: the package name that contains the files to
   bump. Great for repos with multiple independently versioned packages ie. in a
