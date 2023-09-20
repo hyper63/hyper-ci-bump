@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.3](https://github.com/hyper63/hyper-ci-bump/compare/v2.0.2...v2.0.3) (2023-09-20)
+
+
+### Bug Fixes
+
+* support matching root directories, excluding node_modules ([4e6f9ec](https://github.com/hyper63/hyper-ci-bump/commit/4e6f9ec7966881b19b1c9ae74ff7486f2414b466))
+
 ## [2.0.2](https://github.com/hyper63/hyper-ci-bump/compare/v2.0.1...v2.0.2) (2023-03-24)
 
 ## 2.0.1 (2023-03-22)
