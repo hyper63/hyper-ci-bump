@@ -1,4 +1,3 @@
-
 import { join } from 'node:path'
 
 const SUPPORTED_RUNTIMES = ['node', 'deno', 'javascript']
@@ -140,7 +139,7 @@ function lib ({
   async function getPackage (
     pkg
   ) {
-    let paths = await globby(`*/**/${pkg}`, {
+    let paths = await globby([`**/${pkg}`, '!node_modules'], {
       onlyDirectories: true
     })
 
