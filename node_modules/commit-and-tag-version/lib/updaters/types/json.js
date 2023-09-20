@@ -1,4 +1,4 @@
-const stringifyPackage = require('stringify-package')
+const stringifyPackage = require('../../stringify-package')
 const detectIndent = require('detect-indent')
 const detectNewline = require('detect-newline')
 

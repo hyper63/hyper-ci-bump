@@ -552,6 +552,32 @@ module.exports.writeVersion = function (contents, version) {
 };
 ```
 
+### Why do breaking changes before 1.0.0 not trigger a 1.0.0 release?
+
+Below 1.0.0, the semver specification doesn't give any guarantees about the
+meaning of version numbers. However, with npm there is a community convention,
+and implementation-defined behaviour: If your version is between 0.1.0 and
+1.0.0, npm treats an update to the minor version as a breaking change - that is
+^0.1.0 will match 0.1.2 but not 0.2.0. Rust's cargo package manager also behaves
+the same way.
+
+This tool (via conventional-commits) also follows that convention - breaking
+changes below v1.0.0 are treated as a minor version bump. Here's an example
+series of commits with tagged versions:
+
+```
+1017b00 chore: initial commit
+9e2ba95 (tag: v0.0.2) chore(release): 0.0.2
+3598012 fix!: Example breaking change
+1a4994a (tag: v0.1.0) chore(release): 0.1.0
+```
+
+Semver's only guarantee is "all bets are off", but npm has made a choice about
+what bets to make. `commit-and-tag-version` follows the same convention (along
+with other package managers for other ecosystems).
+
+When you are ready to release v1.0.0, add `--release-as 1.0.0` to the options.
+
 ## License
 
 ISC
