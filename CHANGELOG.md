@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.4](https://github.com/hyper63/hyper-ci-bump/compare/v2.0.3...v2.0.4) (2024-02-27)
+
 ## [2.0.3](https://github.com/hyper63/hyper-ci-bump/compare/v2.0.2...v2.0.3) (2023-09-20)
 
 
