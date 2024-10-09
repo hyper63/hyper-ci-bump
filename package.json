@@ -1,6 +1,6 @@
 {
   "name": "hyper-ci-bump",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "main": "index.js",
   "type": "module",
   "description": "Github Action to bump manifest files",

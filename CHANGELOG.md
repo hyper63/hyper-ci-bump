@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.1.0](https://github.com/hyper63/hyper-ci-bump/compare/v2.0.4...v2.1.0) (2024-10-09)
+
+
+### Features
+
+* **manifest:** add support for bumping deno.json and jsr.json ([c9dd43c](https://github.com/hyper63/hyper-ci-bump/commit/c9dd43c3b0863c25e4929031aa77ac8e7f83c55a))
+
 ## [2.0.4](https://github.com/hyper63/hyper-ci-bump/compare/v2.0.3...v2.0.4) (2024-02-27)
 
 ## [2.0.3](https://github.com/hyper63/hyper-ci-bump/compare/v2.0.2...v2.0.3) (2023-09-20)
