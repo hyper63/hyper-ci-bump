@@ -1,29 +1,24 @@
 import { join } from 'node:path'
 
 const SUPPORTED_RUNTIMES = ['node', 'deno', 'javascript']
-const DENO_MANIFEST = 'egg.json'
+const DENO_MANIFEST = 'deno.json'
+const JSR_MANIFEST = 'jsr.json'
+const NEST_MANIFEST = 'egg.json'
 const NODE_MANIFEST = 'package.json'
-
-/** @type {const('standard-version').Options} */
-const COMMON_DEFAULTS = {
-  noVerify: true,
-  // No package files means version always pulled from git tag
-  packageFiles: [],
-  // overwritten via runtime deno or node defaults
-  bumpFiles: [],
-  skip: {
-    bump: false,
-    changelog: true, // skip changelog generation
-    commit: false,
-    tag: false
-  }
-}
 
 /** @type {const('standard-version').Options} */
 const JS_DEFAULTS = {
   bumpFiles: [
     {
       filename: DENO_MANIFEST,
+      type: 'json'
+    },
+    {
+      filename: JSR_MANIFEST,
+      type: 'json'
+    },
+    {
+      filename: NEST_MANIFEST,
       type: 'json'
     },
     {
@@ -35,6 +30,21 @@ const JS_DEFAULTS = {
       type: 'json'
     }
   ]
+}
+
+/** @type {const('standard-version').Options} */
+const COMMON_DEFAULTS = {
+  noVerify: true,
+  // No package files means version always pulled from git tag
+  packageFiles: [],
+  // overwritten via runtime defaults
+  bumpFiles: [],
+  skip: {
+    bump: false,
+    changelog: true, // skip changelog generation
+    commit: false,
+    tag: false
+  }
 }
 
 /**
