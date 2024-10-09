@@ -106,7 +106,7 @@ jobs:
           fetch-depth: 0
           # now pushes from this workflow can trigger subsequent workflows
           token: ${{ secrets.YOUR_PAT }}
-  ...
+...
 ```
 
 Your token will need to have `repo` permissions:
@@ -120,8 +120,8 @@ Your token will need to have `repo` permissions:
 - _string_ `bump-to` **Optional**: the semver comptaible version to bump to. If
   the string "semver" or nothing is passed, then it will semver bump the package
   based on commit messages, following conventional-commit standards. When semver
-  bumping, the most recent git tag is used as the base version. **If no base
-  git tag is found, `v1.0.0` is used as the base to bump from**.
+  bumping, the most recent git tag is used as the base version. **If no base git
+  tag is found, `v1.0.0` is used as the base to bump from**.
 - _string_ `package` **Optional**: the package name that contains the files to
   bump. Great for repos with multiple independently versioned packages ie. in a
   monorepo. Example: `app-opine` will find a package in `*/**/app-opine`
@@ -133,9 +133,9 @@ Your token will need to have `repo` permissions:
   table shows which manifest files will be bumped for each runtime. **default**:
   `javascript`
 
-| runtime                      | manifest files bumped                           |
-| ---------------------------- | ----------------------------------------------- |
-| `deno`, `node`, `javascript` | `egg.json`, `package.json`, `package-lock.json` |
+| runtime                      | manifest files bumped                                                    |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| `deno`, `node`, `javascript` | `deno.json`, `jsr.json`, `egg.json`, `package.json`, `package-lock.json` |
 
 TODO: add some more run times
 
