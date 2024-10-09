@@ -58,11 +58,17 @@ function outputChangelog(args, newVersion) {
     const context = { version: newVersion };
     const changelogStream = conventionalChangelog(
       {
-        debug:
-          args.verbose && console.info.bind(console, 'conventional-changelog'),
         preset: presetLoader(args),
         tagPrefix: args.tagPrefix,
         releaseCount: args.releaseCount,
+        ...(args.verbose
+          ? {
+              debug: console.info.bind(
+                console,
+                'conventional-recommended-bump',
+              ),
+            }
+          : {}),
       },
       context,
       { merges: null, path: args.path, showSignature: false },

@@ -1180,6 +1180,74 @@ describe('cli', function () {
       });
     });
 
+    it('bumps version in OpenAPI `openapi.yaml` file with CRLF Line Endings', async function () {
+      const expected = fs.readFileSync(
+        './test/mocks/openapi-1.3.0-crlf.yaml',
+        'utf-8',
+      );
+      const filename = 'openapi.yaml';
+      mock({
+        bump: 'minor',
+        realTestFiles: [
+          {
+            filename,
+            path: './test/mocks/openapi-1.2.3-crlf.yaml',
+          },
+        ],
+      });
+      await exec({
+        packageFiles: [{ filename, type: 'openapi' }],
+        bumpFiles: [{ filename, type: 'openapi' }],
+      });
+
+      // filePath is the first arg passed to writeFileSync
+      const packageJsonWriteFileSynchCall = findWriteFileCallForPath({
+        writeFileSyncSpy,
+        filename,
+      });
+
+      if (!packageJsonWriteFileSynchCall) {
+        throw new Error(`writeFileSynch not invoked with path ${filename}`);
+      }
+
+      const calledWithContentStr = packageJsonWriteFileSynchCall[1];
+      expect(calledWithContentStr).toEqual(expected);
+    });
+
+    it('bumps version in OpenAPI `openapi.yaml` file with LF Line Endings', async function () {
+      const expected = fs.readFileSync(
+        './test/mocks/openapi-1.3.0-lf.yaml',
+        'utf-8',
+      );
+      const filename = 'openapi.yaml';
+      mock({
+        bump: 'minor',
+        realTestFiles: [
+          {
+            filename,
+            path: './test/mocks/openapi-1.2.3-lf.yaml',
+          },
+        ],
+      });
+      await exec({
+        packageFiles: [{ filename, type: 'openapi' }],
+        bumpFiles: [{ filename, type: 'openapi' }],
+      });
+
+      // filePath is the first arg passed to writeFileSync
+      const packageJsonWriteFileSynchCall = findWriteFileCallForPath({
+        writeFileSyncSpy,
+        filename,
+      });
+
+      if (!packageJsonWriteFileSynchCall) {
+        throw new Error(`writeFileSynch not invoked with path ${filename}`);
+      }
+
+      const calledWithContentStr = packageJsonWriteFileSynchCall[1];
+      expect(calledWithContentStr).toEqual(expected);
+    });
+
     it('bumps version in Maven `pom.xml` file with CRLF Line Endings', async function () {
       const expected = fs.readFileSync(
         './test/mocks/pom-6.4.0-crlf.xml',
@@ -1363,6 +1431,78 @@ describe('cli', function () {
         filename: 'package-lock.json',
       });
       verifyPackageVersion({ writeFileSyncSpy, expectedVersion: '1.1.0' });
+    });
+
+    it('bumps version in Dart `pubspec.yaml` file', async function () {
+      const expected = fs.readFileSync(
+        './test/mocks/pubspec-6.4.0.yaml',
+        'utf-8',
+      );
+
+      const filename = 'pubspec.yaml';
+      mock({
+        bump: 'minor',
+        realTestFiles: [
+          {
+            filename,
+            path: './test/mocks/pubspec-6.3.1.yaml',
+          },
+        ],
+      });
+
+      await exec({
+        packageFiles: [{ filename, type: 'yaml' }],
+        bumpFiles: [{ filename, type: 'yaml' }],
+      });
+
+      // filePath is the first arg passed to writeFileSync
+      const packageJsonWriteFileSynchCall = findWriteFileCallForPath({
+        writeFileSyncSpy,
+        filename,
+      });
+
+      if (!packageJsonWriteFileSynchCall) {
+        throw new Error(`writeFileSynch not invoked with path ${filename}`);
+      }
+
+      const calledWithContentStr = packageJsonWriteFileSynchCall[1];
+      expect(calledWithContentStr).toEqual(expected);
+    });
+
+    it('bumps version in Dart `pubspec.yaml` file with CRLF line endings', async function () {
+      const expected = fs.readFileSync(
+        './test/mocks/pubspec-6.4.0-crlf.yaml',
+        'utf-8',
+      );
+
+      const filename = 'pubspec.yaml';
+      mock({
+        bump: 'minor',
+        realTestFiles: [
+          {
+            filename,
+            path: './test/mocks/pubspec-6.3.1-crlf.yaml',
+          },
+        ],
+      });
+
+      await exec({
+        packageFiles: [{ filename, type: 'yaml' }],
+        bumpFiles: [{ filename, type: 'yaml' }],
+      });
+
+      // filePath is the first arg passed to writeFileSync
+      const packageJsonWriteFileSynchCall = findWriteFileCallForPath({
+        writeFileSyncSpy,
+        filename,
+      });
+
+      if (!packageJsonWriteFileSynchCall) {
+        throw new Error(`writeFileSynch not invoked with path ${filename}`);
+      }
+
+      const calledWithContentStr = packageJsonWriteFileSynchCall[1];
+      expect(calledWithContentStr).toEqual(expected);
     });
 
     describe('skip', function () {

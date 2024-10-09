@@ -6,6 +6,8 @@ const updatersByType = {
   maven: require('./types/maven'),
   gradle: require('./types/gradle'),
   csproj: require('./types/csproj'),
+  yaml: require('./types/yaml'),
+  openapi: require('./types/openapi'),
 };
 const PLAIN_TEXT_BUMP_FILES = ['VERSION.txt', 'version.txt'];
 
@@ -32,6 +34,12 @@ function getUpdaterByFilename(filename) {
   }
   if (filename.endsWith('.csproj')) {
     return getUpdaterByType('csproj');
+  }
+  if (/openapi.yaml/.test(filename)) {
+    return getUpdaterByType('openapi');
+  }
+  if (/\.ya?ml$/.test(filename)) {
+    return getUpdaterByType('yaml');
   }
   throw Error(
     `Unsupported file (${filename}) provided for bumping.\n Please specify the updater \`type\` or use a custom \`updater\`.`,

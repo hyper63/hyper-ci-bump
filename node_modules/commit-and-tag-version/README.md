@@ -22,6 +22,8 @@ _Having problems? Want to contribute? Join us on the [node-tooling community Sla
     - [Maven Support (Java/Kotlin)](#maven-support-javakotlin)
     - [Gradle Support (Java/Kotlin)](#gradle-support-javakotlin)
     - [.NET Support](#net-support)
+    - [YAML Support](#yaml-support)
+    - [OpenAPI Support](#openapi-support)
   - [Installing `commit-and-tag-version`](#installing-commit-and-tag-version)
     - [As a local `npm run` script](#as-a-local-npm-run-script)
     - [As global `bin`](#as-global-bin)
@@ -106,6 +108,23 @@ This is going to read and update only the `<Version>` tag in the file.
 
 ```sh
 commit-and-tag-version --packageFiles <YOUR-PROJECT-NAME>.csproj --bumpFiles <YOUR-PROJECT-NAME>.csproj
+```
+
+### YAML Support
+
+If you are using YAML files.
+This is going to read and update only the `version:` tag in the file.
+
+```sh
+commit-and-tag-version --packageFiles file.yaml --bumpFiles file.yaml
+```
+
+### OpenAPI Support
+
+If you are using OpenAPI, then just point to your `openapi.yaml` file.
+
+```sh
+commit-and-tag-version --packageFiles openapi.yaml --bumpFiles openapi.yaml
 ```
 
 ## Installing `commit-and-tag-version`
