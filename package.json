@@ -15,14 +15,13 @@
     "@actions/github": "^6.0.0",
     "globby": "^14.0.2",
     "rc": "^1.2.8",
-    "commit-and-tag-version": "^12.4.4"
+    "commit-and-tag-version": "^12.5.0"
   },
   "devDependencies": {
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
-    "rimraf": "^6.0.1",
     "standard": "^17.1.2",
-    "vitest": "^2.1.2"
+    "vitest": "^2.1.5"
   },
   "standard": {
     "ignore": [
